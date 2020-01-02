@@ -27,16 +27,15 @@ namespace Ui {
 class microMouseServer;
 }
 
-typedef struct CellStatus_ {
+typedef struct Cell_ {
   int x_, y_;
   bool deadend_;
-  bool critical_;
   bool visited_;
-  inline CellStatus_()
-      : x_(0), y_(0), deadend_(false), critical_(false), visited_(false) {}
-  friend ostream &operator<<(ostream &out, const CellStatus_ &cell_status_);
 
-} CellStatus;
+  Cell_() : x_(0), y_(0), deadend_(false), visited_(false) {}
+  Cell_(int x, int y, bool deadend) : x_(x), y_(y), deadend_(deadend), visited_(false) {}
+  friend ostream &operator<<(ostream &out, const Cell_ &cell);
+} Cell;
 
 class microMouseServer : public QMainWindow {
   Q_OBJECT
@@ -74,29 +73,28 @@ class microMouseServer : public QMainWindow {
 
   void reverse();
 
-  CellStatus_ path_[MAZE_WIDTH][MAZE_HEIGHT];
-  vector<vector<char>> black_list_;
+  Cell_ path_[MAZE_WIDTH][MAZE_HEIGHT];
+  vector<vector<char>> visual_;
 
  public:
   typedef struct CellAttributes_ {
-    bool black_list_;
-    bool white_list_;
-    bool visited_;
-    inline CellAttributes_()
-        : black_list_(false), white_list_(false), visited_(false) {}
+    bool dead_end_;
+
+    CellAttributes_() : dead_end_(false) {}
     friend ostream &operator<<(ostream &out, const CellAttributes_ &cell);
   } CellAttributes;
 
  private:
-  map<pair<int, int>, CellAttributes_> pathway_;
-  int runs_;
+  map<pair<int, int>, CellAttributes_> coords_cell_map_;
+
+  Cell prev_; // Keeps track of last cell. This is used to compute whether
+  // cells are part of a dead end.
 
   void dumpBlacklistedCells();
-  void dumpCriticalPath();
-  bool deadEndAhead();
+  bool IsDeadEndAhead();
   int get_wall_count();
   string translate_dir() const;
-  void JocelynsAlgorithm(); // Solution algorithm
+  void solve(); // Solution algorithm
 
   QTimer *_comTimer;
   QTimer *_aiCallTimer;

@@ -9,12 +9,10 @@
 
 microMouseServer::microMouseServer(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::microMouseServer),
-    runs_(0)
-{
-    black_list_.resize(MAZE_HEIGHT);
+    ui(new Ui::microMouseServer) {
+    visual_.resize(MAZE_HEIGHT);
     for (int i = 0; i < MAZE_HEIGHT; ++i) {
-        black_list_[i].resize((MAZE_WIDTH));
+    visual_[i].resize((MAZE_WIDTH));
     }
 
     maze = new mazeGui;
