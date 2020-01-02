@@ -5,7 +5,6 @@
 #include <map>
 #include <stack>
 #include <vector>
-#include <windows.h>
 
 using namespace std;
 
@@ -16,8 +15,8 @@ ostream &operator<<(ostream &o,
 }
 
 ostream &operator<<(ostream &o, const Cell_ &cell) {
-  o << "<" << cell.x_ << "," << cell.y_ << ">"
-    << cell.deadend_ << " " << cell.visited_;
+  o << "<" << cell.x_ << "," << cell.y_ << ">" << cell.deadend_ << " "
+    << cell.visited_;
   return o;
 }
 
@@ -34,7 +33,9 @@ void microMouseServer::dumpBlacklistedCells() {
           coords_cell_map_.find(pair<int, int>(i, j));
       if (coords_cell_map_.end() != iter) {
         const CellAttributes_ &status = (*iter).second;
-        if (status.dead_end_) {deadend = true;}
+        if (status.dead_end_) {
+          deadend = true;
+        }
       }
       if (deadend) {
         if (i == 19 && j == 19)
@@ -45,9 +46,9 @@ void microMouseServer::dumpBlacklistedCells() {
       } else {
         if (path_[i][j].visited_) {
           if (i == 19 && j == 19) {
-              visual_[i][j] = 'E';
+            visual_[i][j] = 'E';
           } else {
-              visual_[i][j] = '1';
+            visual_[i][j] = '1';
           }
         } else {
           if (i == 0 && j == 0)
@@ -79,8 +80,8 @@ bool microMouseServer::IsDeadEndAhead() {
   bool ret_value = false;
   bool result = moveForward();
   assert(result);
-  map<pair<int, int>, CellAttributes_>::iterator iter =
-      coords_cell_map_.find(pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1));
+  map<pair<int, int>, CellAttributes_>::iterator iter = coords_cell_map_.find(
+      pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1));
   if (coords_cell_map_.end() != iter && (*iter).second.dead_end_) {
     ret_value = true;
   }
@@ -104,10 +105,10 @@ int microMouseServer::get_wall_count() {
   }
 
   reverse();
-  if (isWallForward()) { // Checks back wall
+  if (isWallForward()) {  // Checks back wall
     ++wall_count;
   }
-  reverse(); // Turns back around to original orientation
+  reverse();  // Turns back around to original orientation
 
   return wall_count;
 }
@@ -155,69 +156,71 @@ void microMouseServer::solve() {
     if (!isWallRight()) {
       prev_ = Cell_(maze->mouseX() - 1, maze->mouseY() - 1, false);
 
-
       turnRight();
 
-      bool result = moveForward(); // TODO: limit # of moveForward()'s to one call
+      bool result =
+          moveForward();  // TODO: limit # of moveForward()'s to one call
       assert(result);
 
-      map<pair<int, int>, CellAttributes_>::iterator iter_prev = coords_cell_map_.find(pair<int, int>(prev_.x_, prev_.y_));
+      map<pair<int, int>, CellAttributes_>::iterator iter_prev =
+          coords_cell_map_.find(pair<int, int>(prev_.x_, prev_.y_));
       bool deadend_prev = false;
-      if (coords_cell_map_.end() != iter_prev && (*iter_prev).second.dead_end_) {
-
-          deadend_prev = true;
+      if (coords_cell_map_.end() != iter_prev &&
+          (*iter_prev).second.dead_end_) {
+        deadend_prev = true;
       }
 
-      if (deadend_prev && get_wall_count() == 2) { // Is this path leading out of a dead end?
-          coords_cell_map_[pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1)].dead_end_ = true;
-          prev_ = Cell_(maze->mouseX() - 1, maze->mouseY() - 1, true);
-
+      if (deadend_prev &&
+          get_wall_count() == 2) {  // Is this path leading out of a dead end?
+        coords_cell_map_[pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1)]
+            .dead_end_ = true;
+        prev_ = Cell_(maze->mouseX() - 1, maze->mouseY() - 1, true);
       }
 
-      if (result) { // Were we successfully able to move forward?
-          path_[maze->mouseX() - 1][maze->mouseY() - 1].visited_ = true;
-      } else {
-          assert(true);
-
-        }
-    } else if (!isWallForward()) {
-        prev_ = Cell_(maze->mouseX() - 1, maze->mouseY() - 1, false);
-
-        bool deadend_current = false;
-        map<pair<int, int>, CellAttributes_>::iterator iter = coords_cell_map_.find(pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1));
-        if (coords_cell_map_.end() != iter && (*iter).second.dead_end_) {
-            deadend_current = true;
-        }
-
-        prev_ = Cell_(maze->mouseX() - 1, maze->mouseY() - 1, deadend_current);
-
-        bool result = moveForward(); // TODO: see above
-        assert(result);
-
-        if (deadend_current && get_wall_count() == 2) {
-            coords_cell_map_[pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1)].dead_end_ = true;
-        }
-
-        assert(result);
+      if (result) {  // Were we successfully able to move forward?
         path_[maze->mouseX() - 1][maze->mouseY() - 1].visited_ = true;
+      } else {
+        assert(true);
+      }
+    } else if (!isWallForward()) {
+      prev_ = Cell_(maze->mouseX() - 1, maze->mouseY() - 1, false);
+
+      bool deadend_current = false;
+      map<pair<int, int>, CellAttributes_>::iterator iter =
+          coords_cell_map_.find(
+              pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1));
+      if (coords_cell_map_.end() != iter && (*iter).second.dead_end_) {
+        deadend_current = true;
+      }
+
+      prev_ = Cell_(maze->mouseX() - 1, maze->mouseY() - 1, deadend_current);
+
+      bool result = moveForward();  // TODO: see above
+      assert(result);
+
+      if (deadend_current && get_wall_count() == 2) {
+        coords_cell_map_[pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1)]
+            .dead_end_ = true;
+      }
+
+      assert(result);
+      path_[maze->mouseX() - 1][maze->mouseY() - 1].visited_ = true;
     } else {
-
-        while (isWallForward()) {
-            turnRight();
-            if (!isWallForward() && IsDeadEndAhead()) continue;
-            }
-        }
-        if (get_wall_count() == 3) {
-            coords_cell_map_[pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1)].dead_end_ = true;
-            deadend = true;
-
-        }
+      while (isWallForward()) {
+        turnRight();
+        if (!isWallForward() && IsDeadEndAhead()) continue;
+      }
+    }
+    if (get_wall_count() == 3) {
+      coords_cell_map_[pair<int, int>(maze->mouseX() - 1, maze->mouseY() - 1)]
+          .dead_end_ = true;
+      deadend = true;
+    }
   }
 }
 
 void microMouseServer::studentAI() {
   cout << "studentAI()" << endl;
-
 
   /*
    * The following are the eight functions that you can call. Feel free to

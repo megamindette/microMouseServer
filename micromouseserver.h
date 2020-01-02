@@ -33,7 +33,8 @@ typedef struct Cell_ {
   bool visited_;
 
   Cell_() : x_(0), y_(0), deadend_(false), visited_(false) {}
-  Cell_(int x, int y, bool deadend) : x_(x), y_(y), deadend_(deadend), visited_(false) {}
+  Cell_(int x, int y, bool deadend)
+      : x_(x), y_(y), deadend_(deadend), visited_(false) {}
   friend ostream &operator<<(ostream &out, const Cell_ &cell);
 } Cell;
 
@@ -42,7 +43,7 @@ class microMouseServer : public QMainWindow {
 
  public:
   explicit microMouseServer(QWidget *parent = 0);  // constructor
-  ~microMouseServer();  // destructor
+  ~microMouseServer();                             // destructor
 
  private slots:
   void on_tabWidget_tabBarClicked(int index);
@@ -87,14 +88,14 @@ class microMouseServer : public QMainWindow {
  private:
   map<pair<int, int>, CellAttributes_> coords_cell_map_;
 
-  Cell prev_; // Keeps track of last cell. This is used to compute whether
+  Cell prev_;  // Keeps track of last cell. This is used to compute whether
   // cells are part of a dead end.
 
   void dumpBlacklistedCells();
   bool IsDeadEndAhead();
   int get_wall_count();
   string translate_dir() const;
-  void solve(); // Solution algorithm
+  void solve();  // Solution algorithm
 
   QTimer *_comTimer;
   QTimer *_aiCallTimer;
